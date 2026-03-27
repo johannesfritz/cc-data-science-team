@@ -77,6 +77,18 @@ Run: `python ${CLAUDE_PLUGIN_ROOT}/skills/extract-classify/scripts/count_entries
 
 Report the summary to the user.
 
+### Step 6: Verify Quotes Against Source
+
+Run: `python ${CLAUDE_PLUGIN_ROOT}/skills/extract-classify/scripts/verify_quotes.py --extractions extractions.json --source data/document.md`
+
+This checks every extracted quote against the source text using 5-tier fuzzy matching (EXACT → PHRASE_ALL → PHRASE_PARTIAL → PHRASE_WEAK → NOT_FOUND). Fix any NOT_FOUND quotes before proceeding.
+
+### Step 7: Verify Aggregation Integrity
+
+Run: `python ${CLAUDE_PLUGIN_ROOT}/skills/extract-classify/scripts/verify_aggregations.py --input extractions.json`
+
+This checks that counts are consistent across hierarchy levels (entry → CT pair → country → theme → total). Fix any failures before delivering results.
+
 ## Example
 
 User says: "Classify the China section of the NTE against the 10 themes"

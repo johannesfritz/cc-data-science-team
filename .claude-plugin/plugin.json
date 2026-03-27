@@ -1,6 +1,6 @@
 {
   "name": "data-science-team",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Policy document classification against configurable themes, plus analytics orchestration and statistical review. Use when classifying trade policy reports, NTE reports, WTO reviews, or similar government publications.",
   "author": {
     "name": "SGEPT"
