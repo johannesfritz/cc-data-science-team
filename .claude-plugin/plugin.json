@@ -1,10 +1,12 @@
 {
   "name": "data-science-team",
-  "version": "1.2.0",
-  "description": "Policy document classification against configurable themes, plus analytics orchestration and statistical review. Use when classifying trade policy reports, NTE reports, WTO reviews, or similar government publications.",
+  "version": "2.0.0",
+  "description": "Structured document classification, version comparison, external database matching, and analytical workflows. Extract and tag passages against user-defined schemas, cross-check between sources, and produce validated datasets. Use for policy reports, regulatory filings, research documents, or any structured text analysis.",
   "author": {
     "name": "SGEPT"
   },
   "repository": "https://github.com/global-trade-alert/cc-data-science-team",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "agents": "./agents/",
+  "hooks": "./hooks/hooks.json"
 }

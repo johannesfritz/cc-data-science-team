@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=\"$TOOL_INPUT_file_path\"; if echo \"$f\" | grep -qE 'extraction.*\\.json$'; then python3 -c \"import json,sys; d=json.load(open(sys.argv[1])); entries=[e for t in d.get('themes',[]) for c in t.get('countries',[]) for e in c.get('entries',[])]; empty=[e['entry_id'] for e in entries if not e.get('exact_quote','').strip()]; print(f'WARNING: {len(empty)} entries missing exact_quote: {empty[:5]}') if empty else None\" \"$f\" 2>/dev/null; fi"
+          }
+        ]
+      }
+    ]
+  }
+}
