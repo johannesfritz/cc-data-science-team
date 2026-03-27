@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Policy Document Classification Output",
+  "description": "Schema for the extraction output produced by the extract-classify skill.",
+  "type": "object",
+  "required": ["project", "themes"],
+  "properties": {
+    "project": {
+      "type": "object",
+      "required": ["name", "source_document", "extraction_date"],
+      "properties": {
+        "name": { "type": "string", "description": "Project name" },
+        "source_document": { "type": "string", "description": "Source document filename" },
+        "themes_used": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "List of theme_keys used in this extraction"
+        },
+        "extraction_date": { "type": "string", "format": "date" },
+        "analyst": { "type": "string" }
+      }
+    },
+    "themes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["theme_key", "countries"],
+        "properties": {
+          "theme_key": { "type": "string" },
+          "countries": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["country", "ct_key", "entries"],
+              "properties": {
+                "country": { "type": "string" },
+                "ct_key": {
+                  "type": "string",
+                  "description": "Composite key: COUNTRY__theme_key"
+                },
+                "entries": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "entry_id",
+                      "barrier_description",
+                      "exact_quote",
+                      "state_acts",
+                      "match_strength"
+                    ],
+                    "properties": {
+                      "entry_id": {
+                        "type": "string",
+                        "description": "Unique ID: COUNTRY__theme_key__NNN"
+                      },
+                      "barrier_description": {
+                        "type": "string",
+                        "description": "1-2 sentence description of the trade barrier"
+                      },
+                      "exact_quote": {
+                        "type": "string",
+                        "description": "Verbatim quote from the source document"
+                      },
+                      "specific_measures": {
+                        "type": "string",
+                        "description": "Laws, policies, regulations mentioned"
+                      },
+                      "state_acts": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "required": ["name", "type"],
+                          "properties": {
+                            "name": { "type": "string" },
+                            "type": {
+                              "type": "string",
+                              "enum": ["named", "unnamed"]
+                            }
+                          }
+                        }
+                      },
+                      "intervention_types": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "required": ["mast", "label", "confidence"],
+                          "properties": {
+                            "mast": {
+                              "type": "string",
+                              "description": "MAST chapter letter (A, B, D, E, F, G, H, I, L, M, N, P, FDI, Tariff)"
+                            },
+                            "label": { "type": "string" },
+                            "confidence": {
+                              "type": "string",
+                              "enum": ["HIGH", "MEDIUM"]
+                            }
+                          }
+                        }
+                      },
+                      "match_strength": {
+                        "type": "string",
+                        "enum": ["DIRECT", "STRONG", "MODERATE", "WEAK", "TENUOUS"]
+                      },
+                      "relevance_score": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 5
+                      },
+                      "section": {
+                        "type": "string",
+                        "description": "Document section this was extracted from"
+                      },
+                      "acting_government": { "type": "string" },
+                      "notes": { "type": "string" },
+                      "review_decision": {
+                        "type": "string",
+                        "enum": ["IN", "OUT", "PENDING"],
+                        "description": "Human review decision"
+                      },
+                      "passages": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "passage_id": { "type": "string" },
+                            "text": { "type": "string" },
+                            "page": { "type": "integer" }
+                          }
+                        },
+                        "description": "Multiple passages (after dedup merging)"
+                      },
+                      "_merged_from": {
+                        "type": "array",
+                        "items": { "type": "string" },
+                        "description": "Entry IDs that were merged into this entry (after dedup)"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

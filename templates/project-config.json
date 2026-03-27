@@ -1,0 +1,32 @@
+{
+  "_comment": "Project configuration for policy document classification. Copy to your project directory and fill in.",
+  "document_path": "",
+  "_document_path_note": "Path to the source document (markdown or text). PDF must be converted to markdown first.",
+  "themes_path": "themes.json",
+  "_themes_path_note": "Path to your theme definitions file (see themes-template.json).",
+  "output_path": "extractions.json",
+  "_output_path_note": "Where to write the extraction results.",
+  "inclusion_criteria": {
+    "actor": "Who must be performing the action? (e.g., 'a foreign government')",
+    "action": "What type of action qualifies? (e.g., 'trade barrier, discriminatory regulation, subsidy')",
+    "direction": "Who is affected, and in which direction? (e.g., 'barriers affecting US exports/investment')",
+    "scope": "What is in/out of scope? (e.g., 'current barriers only, not historical')"
+  },
+  "exclusion_criteria": [
+    "Actions by the complainant (e.g., retaliatory tariffs)",
+    "Purely domestic policies with no trade dimension",
+    "Barriers that have been fully removed"
+  ],
+  "unit_of_analysis": "One distinct trade concern or government policy",
+  "_unit_note": "Multiple passages about the same policy = one entry. Different policies = separate entries.",
+  "counting_rules": {
+    "named_dedup": true,
+    "_named_dedup_note": "Deduplicate named state acts by name within each country-theme pair.",
+    "unnamed_dedup": false,
+    "_unnamed_dedup_note": "Unnamed acts have no unique identifier; count each invocation separately."
+  },
+  "countries_of_interest": [],
+  "_countries_note": "Leave empty to process all countries in the document. Or list specific countries to focus on.",
+  "review_decision_required": true,
+  "_review_note": "If true, extracted entries start as 'PENDING' and require human IN/OUT decision."
+}

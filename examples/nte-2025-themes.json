@@ -1,0 +1,83 @@
+{
+  "themes": [
+    {
+      "theme_key": "industrial_excess_capacity",
+      "label": "Industrial Excess Capacity",
+      "allegation": "Foreign governments use subsidies, SOE support, and industrial policy to create overcapacity in sectors like steel, aluminium, solar, EVs, and batteries, flooding global markets with below-cost goods.",
+      "domain": "Trade concerns in the domain of industrial overcapacity and subsidised production. Includes: government subsidies creating excess capacity, SOE-driven overproduction, state-directed industrial consolidation, dumping, AND trade-restrictive responses to overcapacity (safeguards, anti-dumping). The theme covers the full ecosystem of overcapacity as a trade issue.",
+      "keywords": "excess capacity, overproduction, surplus production, state subsidies leading to oversupply, dumping, industrial glut, SOE-driven production, steel/aluminum/solar/EV/battery overcapacity, non-market excess capacity"
+    },
+    {
+      "theme_key": "forced_labor",
+      "label": "Forced Labor",
+      "allegation": "Certain countries tolerate or enable forced labour, child labour, and labour rights violations in supply chains, undermining fair competition and US import standards.",
+      "domain": "Trade concerns in the domain of forced labour and labour rights. Includes: forced labour in supply chains, child labour, UFLPA, WRO enforcement, labour rights violations affecting trade, AND trade measures taken in response to labour concerns.",
+      "keywords": "forced labor, child labor, compulsory labor, trafficking, Uyghur, Xinjiang, UFLPA, WRO, ILO core labour standards, prison labour, debt bondage, labour exploitation"
+    },
+    {
+      "theme_key": "pharmaceutical_pricing",
+      "label": "Pharmaceutical Pricing Practices",
+      "allegation": "Foreign governments use price controls, reference pricing, compulsory licensing, and reimbursement restrictions to suppress pharmaceutical prices, disadvantaging US pharmaceutical companies.",
+      "domain": "Trade concerns in the domain of pharmaceutical and medical device market access. Includes: price controls, reference pricing, reimbursement restrictions, HTA barriers, compulsory licensing, AND intellectual property barriers specific to pharmaceuticals (patent scope restrictions, test data protection failures, regulatory data exclusivity gaps, patent examination backlogs). IP protection is integral to pharmaceutical market access — weak IP regimes directly affect pricing power and market returns.",
+      "keywords": "pharmaceutical price controls, drug pricing, reference pricing, reimbursement policies, HTA, compulsory licensing, formulary restrictions, government-set medicine prices, parallel imports, patent term issues for pharmaceuticals"
+    },
+    {
+      "theme_key": "tech_discrimination",
+      "label": "Discrimination Against U.S. Technology Companies",
+      "allegation": "Foreign governments discriminate against US tech firms through app/platform bans, data localisation, cybersecurity reviews, content requirements, preferential treatment of domestic platforms.",
+      "domain": "Trade concerns in the domain of technology and digital trade. Includes: platform bans, data localisation, cybersecurity reviews, content requirements, domestic platform preferences, cloud restrictions, AND broader technology trade barriers: ICT hardware restrictions, encryption mandates, in-country testing requirements, broadcast/media content quotas that extend to or affect digital services, AI regulation with trade implications, satellite/telecom restrictions affecting US tech firms. The theme covers all technology-related trade concerns, not only digital platform issues.",
+      "keywords": "blocking US websites/apps/platforms, data localisation, cross-border data flow restrictions, cybersecurity reviews, content filtering, source code disclosure, encryption mandates, preferential treatment of domestic tech, cloud computing restrictions"
+    },
+    {
+      "theme_key": "digital_services_taxes",
+      "label": "Digital Services Taxes",
+      "allegation": "Foreign governments impose unilateral digital services taxes, equalisation levies, and similar measures that disproportionately target US technology companies.",
+      "domain": "Trade concerns in the domain of digital taxation. Includes: DSTs, equalisation levies, online advertising taxes, significant digital presence taxes, AND other unilateral tax measures that disproportionately affect US technology companies (withholding taxes on IP transfers with extraterritorial reach, customs duties on electronic transmissions). The theme covers all tax measures with a digital/technology targeting dimension.",
+      "keywords": "digital services tax, DST, digital tax, equalisation levy, online advertising tax, significant digital presence tax, withholding tax on digital services, Pillar One/Two"
+    },
+    {
+      "theme_key": "ocean_pollution",
+      "label": "Ocean Pollution",
+      "allegation": "Certain countries contribute to marine pollution through ocean dumping, plastic waste, ship emissions, IUU fishing environmental damage, and inadequate marine ecosystem protection.",
+      "domain": "Trade concerns in the domain of ocean and marine environmental policy. Includes: marine pollution, plastic waste, ship emissions, ocean dumping, IUU fishing environmental damage, AND trade-restrictive environmental regulations in this domain (plastic bans, packaging requirements, circular economy mandates that restrict trade). The theme covers both insufficient environmental protection AND over-regulation that creates trade barriers.",
+      "keywords": "ocean pollution, marine pollution, plastic waste, ship emissions, ballast water, ocean dumping, coastal water contamination, maritime environmental regulation, marine ecosystem degradation"
+    },
+    {
+      "theme_key": "seafood",
+      "label": "Seafood Trade Barriers",
+      "allegation": "Foreign governments restrict US seafood exports through fisheries subsidies, IUU fishing, import restrictions on fish and shellfish, and discriminatory SPS requirements specific to seafood.",
+      "domain": "Trade concerns SPECIFICALLY about seafood, fish, and shellfish. Includes: fisheries subsidies, IUU fishing, import restrictions on fish/shrimp/tuna/salmon/crab/lobster/shellfish, aquaculture subsidies, SPS barriers specific to seafood products, WTO fisheries subsidies negotiations. EXCLUDES: barriers affecting rice, meat, dairy, grain, fruit, vegetables, or other non-seafood agricultural products — even if mentioned in the same passage. Only extract the seafood-specific concern.",
+      "keywords": "fish, fishing, fisheries, seafood, shrimp, tuna, salmon, crab, lobster, shellfish, squid, anchovy, aquaculture, IUU, marine catch"
+    },
+    {
+      "theme_key": "rice",
+      "label": "Rice Trade Barriers",
+      "allegation": "Foreign governments restrict US rice exports through tariffs, quotas, import licensing, state trading monopolies, and SPS measures targeting rice.",
+      "domain": "Trade concerns SPECIFICALLY about rice and paddy. Includes: rice tariffs, rice quotas, rice import licensing, state trading enterprises monopolising rice imports, SPS barriers specific to rice, rice procurement and stockpiling policies that distort trade. EXCLUDES: barriers affecting wheat, corn, other grains, seafood, meat, dairy, fruit, vegetables, or other non-rice products — even if mentioned in the same passage. Only extract the rice-specific concern.",
+      "keywords": "rice, paddy, rice tariff, rice quota, rice import, rice trade"
+    },
+    {
+      "theme_key": "beef_pork_meat",
+      "label": "Beef, Pork & Meat Trade Barriers",
+      "allegation": "Foreign governments restrict US meat exports through BSE-related bans, ractopamine restrictions, halal certification barriers, poultry import restrictions, and other SPS measures targeting beef, pork, and meat products.",
+      "domain": "Trade concerns SPECIFICALLY about beef, pork, poultry, and meat products (including offal and processed meat). Includes: BSE-related import restrictions, ractopamine bans, hormone-treated beef bans, SRM requirements, halal certification barriers for meat, poultry HPAI restrictions, veterinary drug MRLs applied to meat, country-of-origin labelling affecting meat trade. EXCLUDES: barriers affecting seafood, rice, dairy, grain, fruit, vegetables, or other non-meat products — even if mentioned in the same passage. Only extract the meat-specific concern.",
+      "keywords": "beef, pork, meat, poultry, chicken, cattle, livestock, BSE, ractopamine, SRM, hormone, halal meat, HPAI, avian influenza"
+    },
+    {
+      "theme_key": "dairy_milk",
+      "label": "Dairy & Milk Trade Barriers",
+      "allegation": "Foreign governments restrict US dairy exports through import quotas, tariff-rate quotas, SPS barriers, compositional standards, and geographic indication protections that limit market access for US dairy products.",
+      "domain": "Trade concerns SPECIFICALLY about dairy and milk products (milk, cheese, butter, cream, yoghurt, whey, milk powder). Includes: dairy tariffs and TRQs, SPS barriers specific to dairy, compositional standards for dairy products, GI protections that restrict common dairy names (e.g., feta, parmesan), dairy supply management systems. EXCLUDES: barriers affecting seafood, rice, meat, grain, fruit, vegetables, or other non-dairy products — even if mentioned in the same passage. Only extract the dairy-specific concern.",
+      "keywords": "dairy, milk, cheese, butter, cream, yoghurt, whey, milk powder, TRQ dairy, geographic indication cheese"
+    }
+  ],
+  "metadata": {
+    "project_name": "NTE 2025 Section 301 Investigation Candidates",
+    "source_document": "NTE-Report-2025.pdf",
+    "document_type": "policy_report",
+    "analyst": "SGEPT",
+    "date_created": "2026-02-24",
+    "version": "3.0",
+    "notes": "10 themes mapping USTR Ambassador Greer's 7 Section 301 investigation themes (announced 20 Feb 2026) to the NTE 2025 report. The original 7 themes were expanded to 10 by splitting 'seafood, rice, and other products' into 4 specific agricultural themes."
+  }
+}

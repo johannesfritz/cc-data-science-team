@@ -1,0 +1,9 @@
+{
+  "name": "data-science-team",
+  "version": "1.0.0",
+  "description": "Data science workflows: policy document classification against configurable themes, analytics orchestration, statistical review, and publication-quality visualization.",
+  "author": {
+    "name": "SGEPT"
+  },
+  "license": "UNLICENSED"
+}

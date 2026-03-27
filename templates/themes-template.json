@@ -1,0 +1,26 @@
+{
+  "_comment": "Template for defining classification themes. Copy this file, rename to themes.json, and fill in your themes.",
+  "themes": [
+    {
+      "theme_key": "example_theme_key",
+      "_theme_key_note": "Machine identifier. Use snake_case, no spaces. This becomes part of entry IDs.",
+      "label": "Human-Readable Theme Name",
+      "_label_note": "Short name for display in charts, tables, and reports.",
+      "allegation": "What this theme alleges, in 1-2 sentences. This frames the analytical lens.",
+      "_allegation_note": "Example: 'Foreign governments use subsidies to create overcapacity in sectors like steel, flooding global markets with below-cost goods.'",
+      "domain": "Detailed scope description. State explicitly what is IN scope and what is OUT of scope. Include boundary cases.",
+      "_domain_note": "This is the most important field. The classifier uses it to decide borderline cases. Be specific about what counts and what does not. For product-specific themes, explicitly EXCLUDE other products even if mentioned in the same passage.",
+      "keywords": "comma-separated search terms that indicate relevance to this theme",
+      "_keywords_note": "Used for initial document scanning. Include synonyms, abbreviations, and related terms."
+    }
+  ],
+  "metadata": {
+    "project_name": "",
+    "source_document": "",
+    "document_type": "policy_report",
+    "_document_type_note": "Common types: policy_report, trade_review, regulatory_catalogue, sanctions_list",
+    "analyst": "",
+    "date_created": "",
+    "version": "1.0"
+  }
+}
