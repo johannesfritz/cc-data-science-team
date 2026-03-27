@@ -1,6 +1,6 @@
 ---
 name: prepare-document
-description: Convert a PDF policy document to structured markdown for classification. Identifies country chapters, section headers, and preserves quoted text. Use when user says "prepare the document", "convert this PDF", "set up the NTE for extraction", or provides a PDF to classify. Must run before extract-classify.
+description: Convert a PDF document to structured markdown for classification. Identifies chapters, section headers, and preserves quoted text. Use when user says "prepare the document", "convert this PDF", "set up for extraction", or provides a PDF to classify. Must run before extract-classify.
 ---
 
 # Prepare Document

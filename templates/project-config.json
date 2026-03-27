@@ -1,32 +1,43 @@
 {
-  "_comment": "Project configuration for policy document classification. Copy to your project directory and fill in.",
+  "_comment": "Project configuration for document classification. Copy to your project directory and fill in.",
   "document_path": "",
-  "_document_path_note": "Path to the source document (markdown or text). PDF must be converted to markdown first.",
   "themes_path": "themes.json",
-  "_themes_path_note": "Path to your theme definitions file (see themes-template.json).",
   "output_path": "extractions.json",
-  "_output_path_note": "Where to write the extraction results.",
+
   "inclusion_criteria": {
-    "actor": "Who must be performing the action? (e.g., 'a foreign government')",
-    "action": "What type of action qualifies? (e.g., 'trade barrier, discriminatory regulation, subsidy')",
-    "direction": "Who is affected, and in which direction? (e.g., 'barriers affecting US exports/investment')",
-    "scope": "What is in/out of scope? (e.g., 'current barriers only, not historical')"
+    "actor": "Who or what must be the subject? (e.g., 'a foreign government', 'a company', 'a regulator')",
+    "action": "What type of item qualifies? (e.g., 'policy measure', 'risk factor', 'commitment', 'allegation')",
+    "scope": "What is in/out of scope? (e.g., 'current items only', 'all historical items')"
   },
+
   "exclusion_criteria": [
-    "Actions by the complainant (e.g., retaliatory tariffs)",
-    "Purely domestic policies with no trade dimension",
-    "Barriers that have been fully removed"
+    "Items that do not match any theme definition",
+    "Passages that mention a keyword without describing a substantive item"
   ],
-  "unit_of_analysis": "One distinct trade concern or government policy",
-  "_unit_note": "Multiple passages about the same policy = one entry. Different policies = separate entries.",
+
+  "unit_of_analysis": "One distinct item per entry. Multiple passages about the same item = one entry. Different items = separate entries.",
+
+  "output_fields": {
+    "_comment": "Define the fields each entry should contain. The core fields (entry_id, theme_key, section, exact_quote, description, match_strength) are always present. Add project-specific fields below.",
+    "custom_fields": []
+  },
+
+  "audit_dimensions": {
+    "_comment": "Define what to check during the audit-entries skill. Each dimension is a yes/no question applied to every entry.",
+    "category_match": "Does this entry fall within the theme's specific domain?",
+    "quote_fidelity": "Is the exact_quote truly verbatim from the source document?"
+  },
+
   "counting_rules": {
     "named_dedup": true,
-    "_named_dedup_note": "Deduplicate named state acts by name within each country-theme pair.",
+    "_named_dedup_note": "Deduplicate named items by name within each section-category pair.",
     "unnamed_dedup": false,
-    "_unnamed_dedup_note": "Unnamed acts have no unique identifier; count each invocation separately."
+    "_unnamed_dedup_note": "Unnamed items have no unique identifier; count each invocation separately."
   },
-  "countries_of_interest": [],
-  "_countries_note": "Leave empty to process all countries in the document. Or list specific countries to focus on.",
-  "review_decision_required": true,
-  "_review_note": "If true, extracted entries start as 'PENDING' and require human IN/OUT decision."
+
+  "sections_of_interest": [],
+  "_sections_note": "Leave empty to process all sections. Or list specific sections to focus on.",
+
+  "taxonomy_files": [],
+  "_taxonomy_note": "List paths to any reference taxonomy files (e.g., classification codes, sector lists). Claude will consult these during extraction."
 }

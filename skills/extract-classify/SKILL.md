@@ -1,69 +1,63 @@
 ---
 name: extract-classify
-description: Classify a policy document against configurable themes, extracting trade barriers, state acts, and intervention types. Use when user says "classify this document", "extract trade barriers", "parse the NTE report", "map this report against themes", or "run the extraction". Not for general text analysis or summarisation.
+description: Classify a structured document against a user-defined tagging schema. Extracts labelled passages section by section, with self-audit and deterministic verification. Use when user says "classify this document", "tag these sections", "extract and label", "parse this report against my schema", or "run the extraction". Not for general summarisation.
 ---
 
-# Policy Document Classification
+# Document Classification
 
 ## Critical: Before Starting
 
-1. Locate the theme definitions file (`themes.json`) in the project directory
-2. Locate the project config (`project-config.json`) — if missing, create from `${CLAUDE_PLUGIN_ROOT}/templates/`
-3. Read both files before extracting anything
+1. Locate the **tagging schema** (`themes.json`) — defines what categories to look for and how to recognise them
+2. Locate the **project config** (`project-config.json`) — defines inclusion/exclusion criteria, output fields, and audit dimensions
+3. If either is missing, help the user create them from `${CLAUDE_PLUGIN_ROOT}/templates/`
+4. For a working trade-policy example, see `${CLAUDE_PLUGIN_ROOT}/examples/nte-2025-themes.json`
 
 ## Workflow
 
 ### Step 1: Load Configuration
 
-- Read `themes.json` for theme definitions (theme_key, label, domain, keywords)
-- Read `project-config.json` for inclusion/exclusion criteria and counting rules
-- Confirm document path with the user
+- Read `themes.json` for category definitions (theme_key, label, domain, keywords)
+- Read `project-config.json` for:
+  - **Inclusion criteria** — what qualifies as a match
+  - **Exclusion criteria** — what to filter out
+  - **Output fields** — what to extract per entry (the schema is user-defined, not fixed)
+  - **Audit dimensions** — what to self-check before writing each entry
 
 ### Step 2: Process Section by Section
 
-For each section (typically one country chapter):
+For each document section:
 
 1. Read the section text carefully
-2. For each theme, identify passages describing barriers maintained by a foreign government
-3. Apply inclusion criteria: barrier still in force, affects trade, foreign government is actor
-4. Apply exclusion criteria: no complainant actions, no liberalisations (unless reform was insufficient), no keyword-only mentions
-5. One entry = one distinct policy. Consolidate multiple quotes about the same policy. Different policies = separate entries.
+2. For each theme/category, identify passages matching the category's `domain` definition
+3. Apply inclusion criteria from project config
+4. Apply exclusion criteria from project config
+5. One entry = one distinct item matching the unit of analysis defined in the config. Consolidate multiple passages about the same item. Different items = separate entries.
 
 ### Step 3: For Each Finding, Output
 
+Write entries using the field structure defined in `project-config.json`. The minimum required fields are:
+
 ```json
 {
-  "entry_id": "[COUNTRY]__[theme_key]__[NNN]",
-  "theme_key": "...",
-  "country": "...",
-  "section": "document section name",
-  "relevance_score": 1-5,
-  "exact_quote": "verbatim from source (most informative passage)",
-  "barrier_description": "what the barrier is (1-2 sentences)",
-  "specific_measures": "laws, policies, regulations mentioned",
-  "acting_government": "the foreign government",
-  "state_acts": [
-    {"name": "Named Law", "type": "named"},
-    {"name": "unnamed practice description", "type": "unnamed"}
-  ],
-  "intervention_types": [
-    {"mast": "I", "label": "Local content requirement", "confidence": "HIGH"}
-  ],
-  "match_strength": "DIRECT|STRONG|MODERATE|WEAK|TENUOUS",
-  "notes": ""
+  "entry_id": "[SECTION]__[theme_key]__[NNN]",
+  "theme_key": "category key from themes.json",
+  "section": "document section this came from",
+  "exact_quote": "verbatim from source text",
+  "description": "what was found (1-2 sentences)",
+  "match_strength": "DIRECT|STRONG|MODERATE|WEAK|TENUOUS"
 }
 ```
 
-For MAST classification, consult `${CLAUDE_PLUGIN_ROOT}/skills/extract-classify/references/mast-taxonomy.md`.
-For counting methodology, consult `${CLAUDE_PLUGIN_ROOT}/skills/extract-classify/references/counting-rules.md`.
+Additional fields (e.g., named entities, sub-classifications, actor identification) are defined per-project in the config. Consult the project config's `output_fields` section and any referenced taxonomy files.
 
 ### Step 4: Self-Audit Each Entry
 
-Before writing, verify each entry passes:
-- **Theme match:** Is this SPECIFICALLY about this theme's domain? Product-specific themes require product-specific barriers.
-- **Jurisdiction:** Is the foreign government the actor? Not the document's author.
-- **Still in force:** Has this barrier been removed? Exclude unless reform was insufficient.
-- **Quote exists:** Is the exact_quote actually verbatim from the source?
+Before writing, verify each entry against the audit dimensions defined in `project-config.json`. Common dimensions include:
+
+- **Category match** — does this entry fall within the theme's specific domain?
+- **Actor/direction** — is the correct actor or direction identified? (configurable per project)
+- **Currency** — is the finding still current/valid? (configurable per project)
+- **Quote fidelity** — is the exact_quote truly verbatim?
 
 Flag entries with match_strength WEAK or TENUOUS for later review.
 
@@ -87,30 +81,30 @@ This checks every extracted quote against the source text using 5-tier fuzzy mat
 
 Run: `python ${CLAUDE_PLUGIN_ROOT}/skills/extract-classify/scripts/verify_aggregations.py --input extractions.json`
 
-This checks that counts are consistent across hierarchy levels (entry → CT pair → country → theme → total). Fix any failures before delivering results.
+This checks that counts are consistent across hierarchy levels. Fix any failures before delivering results.
 
 ## Example
 
-User says: "Classify the China section of the NTE against the 10 themes"
+User provides a trade policy report with 10 themes defined in `themes.json`:
 
-1. Read `themes.json` (10 themes loaded)
+1. Read themes (10 categories loaded)
 2. Read the China chapter from the source document
-3. Process: find 50 entries across 4 themes (tech_discrimination, pharmaceutical_pricing, industrial_excess_capacity, forced_labor)
+3. Process: find 50 entries across 4 themes
 4. Write entries to `extractions.json`
-5. Run `python ${CLAUDE_PLUGIN_ROOT}/skills/extract-classify/scripts/validate_output.py --input extractions.json` → VALID
-6. Run `python ${CLAUDE_PLUGIN_ROOT}/skills/extract-classify/scripts/count_entries.py --input extractions.json` → report stats
-7. Tell user: "Processed China: 50 entries across 4 themes. 29 named state acts, 21 unnamed."
+5. Run validation → VALID
+6. Run quote verification → all 50 quotes matched
+7. Report: "Processed China: 50 entries across 4 themes."
 
 ## Troubleshooting
 
-**Empty results for a section:** Check that your themes cover the document's topics. A report on digital governance won't match agricultural themes.
+**Empty results for a section:** Check that your themes cover the document's topics. Categories defined for one domain won't match content from another.
 
-**Too many WEAK entries:** The theme domain descriptions may be too broad. Tighten the `domain` field in `themes.json` to be more specific about what's in/out.
+**Too many WEAK entries:** The category `domain` descriptions may be too broad. Tighten the `domain` field in `themes.json` to be more specific about what's in/out.
 
 **Quote verification failures:** Ensure exact_quote is truly verbatim. Do not paraphrase, truncate, or edit quotes from the source document.
 
 ## Performance Notes
 
-- Process one country/section at a time, not the whole document at once
+- Process one section at a time, not the whole document at once
 - Quality is more important than speed — read every sentence
 - Do not skip validation steps

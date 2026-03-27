@@ -1,0 +1,51 @@
+{
+  "_comment": "Example project config for NTE trade policy classification. Shows how to fill in the generic template for a trade barrier extraction project.",
+  "document_path": "data/nte_2025_full.md",
+  "themes_path": "themes.json",
+  "output_path": "extractions.json",
+
+  "inclusion_criteria": {
+    "actor": "A foreign government maintaining the barrier (not the US or document author)",
+    "action": "A trade barrier, discriminatory regulation, subsidy, or restrictive practice that affects trade flows, market access, or competitive conditions",
+    "scope": "Current barriers only — still in force. Exclude barriers that have been fully removed. Exception: include if the document complains that a reform did not go far enough (the remaining restriction is the barrier)."
+  },
+
+  "exclusion_criteria": [
+    "Actions by the document's author (retaliatory tariffs, sanctions, treaty withdrawals, dispute initiations)",
+    "Purely domestic policies with no trade dimension",
+    "Passages that merely mention a keyword without describing an actual barrier",
+    "Liberalisations — barriers that have been removed, reduced, or reformed (unless reform was insufficient)"
+  ],
+
+  "unit_of_analysis": "One distinct trade concern or government policy. Multiple quotes about the same policy = one entry. Different aspects of one law = one entry. Different policies or sectors = separate entries.",
+
+  "output_fields": {
+    "_comment": "Trade-policy-specific fields beyond the core set.",
+    "custom_fields": [
+      {"name": "acting_government", "type": "string", "description": "The foreign government maintaining this barrier"},
+      {"name": "specific_measures", "type": "string", "description": "Laws, policies, regulations mentioned"},
+      {"name": "state_acts", "type": "array", "description": "Named and unnamed government actions", "items": {"name": "string", "type": "named|unnamed"}},
+      {"name": "intervention_types", "type": "array", "description": "MAST chapter classifications", "items": {"mast": "string", "label": "string", "confidence": "HIGH|MEDIUM"}}
+    ]
+  },
+
+  "audit_dimensions": {
+    "category_match": "Does this entry fall within the theme's specific domain? Product-specific themes require product-specific barriers.",
+    "jurisdiction": "Is the barrier maintained by the foreign government, not the document's author?",
+    "trade_framing": "Does this concern affect trade flows, market access, or competitive conditions?",
+    "currency": "Is the barrier still in force? Has it been removed or reformed?",
+    "quote_fidelity": "Is the exact_quote truly verbatim from the source document?"
+  },
+
+  "counting_rules": {
+    "named_dedup": true,
+    "unnamed_dedup": false
+  },
+
+  "sections_of_interest": [],
+
+  "taxonomy_files": [
+    "mast-taxonomy.md"
+  ],
+  "_taxonomy_note": "The MAST taxonomy reference (in examples/ directory) defines intervention type classifications."
+}
