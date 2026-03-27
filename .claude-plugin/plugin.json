@@ -1,9 +1,10 @@
 {
   "name": "data-science-team",
-  "version": "1.0.0",
-  "description": "Data science workflows: policy document classification against configurable themes, analytics orchestration, statistical review, and publication-quality visualization.",
+  "version": "1.1.0",
+  "description": "Policy document classification against configurable themes, plus analytics orchestration and statistical review. Use when classifying trade policy reports, NTE reports, WTO reviews, or similar government publications.",
   "author": {
     "name": "SGEPT"
   },
+  "repository": "https://github.com/global-trade-alert/cc-data-science-team",
   "license": "UNLICENSED"
 }

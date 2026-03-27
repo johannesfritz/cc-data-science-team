@@ -43,7 +43,7 @@ Write clusters as JSON, then update the extraction file:
 
 ## After Dedup
 
-Run: `python scripts/dedup_counts.py --before extractions.json --after extractions_deduped.json`
+Run: `python ${CLAUDE_PLUGIN_ROOT}/skills/dedup-entries/scripts/dedup_counts.py --before extractions.json --after extractions_deduped.json`
 
 This compares before/after counts and reports which country-theme pairs changed.
 

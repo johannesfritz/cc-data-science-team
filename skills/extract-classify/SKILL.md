@@ -8,7 +8,7 @@ description: Classify a policy document against configurable themes, extracting 
 ## Critical: Before Starting
 
 1. Locate the theme definitions file (`themes.json`) in the project directory
-2. Locate the project config (`project-config.json`) — if missing, create from `templates/`
+2. Locate the project config (`project-config.json`) — if missing, create from `${CLAUDE_PLUGIN_ROOT}/templates/`
 3. Read both files before extracting anything
 
 ## Workflow
@@ -54,8 +54,8 @@ For each section (typically one country chapter):
 }
 ```
 
-For MAST classification, consult `references/mast-taxonomy.md`.
-For counting methodology, consult `references/counting-rules.md`.
+For MAST classification, consult `${CLAUDE_PLUGIN_ROOT}/skills/extract-classify/references/mast-taxonomy.md`.
+For counting methodology, consult `${CLAUDE_PLUGIN_ROOT}/skills/extract-classify/references/counting-rules.md`.
 
 ### Step 4: Self-Audit Each Entry
 
@@ -69,11 +69,11 @@ Flag entries with match_strength WEAK or TENUOUS for later review.
 
 ### Step 5: Validate Output
 
-Run: `python scripts/validate_output.py --input extractions.json`
+Run: `python ${CLAUDE_PLUGIN_ROOT}/skills/extract-classify/scripts/validate_output.py --input extractions.json`
 
 If validation fails, fix the errors before proceeding.
 
-Run: `python scripts/count_entries.py --input extractions.json`
+Run: `python ${CLAUDE_PLUGIN_ROOT}/skills/extract-classify/scripts/count_entries.py --input extractions.json`
 
 Report the summary to the user.
 
@@ -85,8 +85,8 @@ User says: "Classify the China section of the NTE against the 10 themes"
 2. Read the China chapter from the source document
 3. Process: find 50 entries across 4 themes (tech_discrimination, pharmaceutical_pricing, industrial_excess_capacity, forced_labor)
 4. Write entries to `extractions.json`
-5. Run `python scripts/validate_output.py --input extractions.json` → VALID
-6. Run `python scripts/count_entries.py --input extractions.json` → report stats
+5. Run `python ${CLAUDE_PLUGIN_ROOT}/skills/extract-classify/scripts/validate_output.py --input extractions.json` → VALID
+6. Run `python ${CLAUDE_PLUGIN_ROOT}/skills/extract-classify/scripts/count_entries.py --input extractions.json` → report stats
 7. Tell user: "Processed China: 50 entries across 4 themes. 29 named state acts, 21 unnamed."
 
 ## Troubleshooting

@@ -59,7 +59,7 @@ Write audit results as JSON:
 
 ## After Auditing
 
-Run: `python scripts/audit_summary.py --input audit_results.json`
+Run: `python ${CLAUDE_PLUGIN_ROOT}/skills/audit-entries/scripts/audit_summary.py --input audit_results.json`
 
 Present the summary. Ask the user to decide on REVIEW entries.
 

@@ -33,13 +33,13 @@ Output to `data/{document_name}.md` with:
 
 ### 4. Validate
 
-Run: `python scripts/check_structure.py --input data/output.md`
+Run: `python ${CLAUDE_PLUGIN_ROOT}/skills/prepare-document/scripts/check_structure.py --input data/output.md`
 
 Report to user: total lines, word count, number of top-level sections, number of sub-sections.
 
 ### 5. Create Project Config
 
-If `project-config.json` doesn't exist, create from `templates/project-config.json` with the document path pre-filled.
+If `project-config.json` doesn't exist, create from `${CLAUDE_PLUGIN_ROOT}/templates/project-config.json` with the document path pre-filled.
 
 ## Example
 
