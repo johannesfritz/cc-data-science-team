@@ -1,93 +1,70 @@
 ---
 name: audit-entries
-description: Red-team audit of extracted policy document entries. Reviews each entry for theme match strength, jurisdiction correctness, trade framing, and liberalisation status. Use after extract-classify to quality-check results.
-user-invocable: true
+description: Red-team review of extracted policy document entries. Checks theme match strength, jurisdiction, trade framing, and liberalisation status. Use when user says "audit the extractions", "review the entries", "quality check", or "red-team the results". Not for initial extraction — use extract-classify first.
 ---
 
 # Audit Extracted Entries
 
-You are a trade policy analyst conducting a red-team audit of previously extracted entries. Your job is to challenge every classification decision and flag errors.
+## Critical: Read These First
 
-## Input
+1. The extraction output file (JSON)
+2. The theme definitions file (`themes.json`)
+3. The source document (for quote verification)
 
-Read the extraction output file (JSON) produced by the extract-classify skill. Also read the theme definitions and source document for reference.
+## For Each Entry, Assess
 
-## For Each Entry, Assess Four Dimensions
+| Dimension | Question | Fail Condition |
+|-----------|----------|----------------|
+| **Theme match** | Is this SPECIFICALLY about this theme's domain? | WEAK or TENUOUS → recommend removal |
+| **Jurisdiction** | Is the foreign government the actor? | Describes complainant's own action → remove |
+| **Trade framing** | Does this affect trade flows or market access? | Purely domestic policy → remove |
+| **Liberalisation** | Has the barrier been removed? | Barrier no longer exists → remove (unless reform insufficient) |
 
-### 1. Theme Match
+### Match Strength Ratings
 
-Does this entry fall within the theme's SPECIFIC domain?
+- **DIRECT:** Squarely within the theme domain
+- **STRONG:** Clearly within, addressing a sub-area
+- **MODERATE:** Within the broader domain but peripheral
+- **WEAK:** Tangentially connected — likely remove
+- **TENUOUS:** Misclassified — remove
+- **EXCLUDE:** Not a trade concern at all — remove
 
-| Rating | Meaning | Action |
-|--------|---------|--------|
-| **DIRECT** | Squarely within the theme domain, specifically about this theme's product/policy | Keep |
-| **STRONG** | Clearly within the domain, addressing a specific sub-area of this theme | Keep |
-| **MODERATE** | Within the broader domain but at the periphery | Keep, flag for review |
-| **WEAK** | Tangentially connected. A stretch to include under this theme | Recommend removal |
-| **TENUOUS** | Does not belong under this theme. Misclassified | Remove |
-| **EXCLUDE** | Not a trade concern, or describes a complainant action, or is a liberalisation | Remove |
+### Product-Specificity Rule
 
-**Product-specificity check:** For product-specific themes (seafood, rice, beef/pork/meat, dairy/milk, or any narrowly defined theme), the entry MUST be specifically about that product. A general agricultural SPS barrier that happens to mention the product alongside many others should be rated WEAK or TENUOUS unless the barrier specifically targets this product.
+For narrow themes (seafood, rice, dairy, etc.): the barrier must SPECIFICALLY target that product. A general SPS barrier mentioning the product alongside others = WEAK at best.
 
-### 2. Jurisdiction
+## Output
 
-Is the barrier maintained by the FOREIGN GOVERNMENT?
-
-- If the entry describes an action by the document's author (e.g., US tariff, US sanctions) rather than the foreign government, flag as `jurisdiction_ok: false`.
-- The foreign government must be the primary actor being complained about.
-
-### 3. Trade Framing
-
-Does this concern affect trade flows, market access, or competitive conditions?
-
-- If the entry describes a purely domestic policy with no trade dimension, flag as `trade_framing_ok: false`.
-- Indirect trade effects count (e.g., subsidies creating unfair competition).
-
-### 4. Liberalisation Check
-
-Does the passage describe a barrier that has been REMOVED or REFORMED?
-
-- If the barrier no longer exists, flag as `is_liberalisation: true` and recommend removal.
-- Exception: if the document notes a liberalisation but complains the reform was insufficient, the REMAINING restriction is the barrier. Keep the entry but update the barrier description to reflect the remaining restriction.
-
-## Output Format
-
-For each entry, produce:
+Write audit results as JSON:
 
 ```json
 {
-  "entry_id": "original entry ID",
-  "match_strength": "DIRECT|STRONG|MODERATE|WEAK|TENUOUS|EXCLUDE",
-  "reasoning": "1-2 sentence explanation",
+  "entry_id": "original ID",
+  "match_strength": "DIRECT",
+  "reasoning": "1-2 sentences",
   "jurisdiction_ok": true,
   "trade_framing_ok": true,
   "is_liberalisation": false,
-  "recommendation": "KEEP|REVIEW|REMOVE",
-  "notes": "any additional context"
+  "recommendation": "KEEP|REVIEW|REMOVE"
 }
 ```
 
-## Summary Report
+## Decision Rules (Mechanical)
 
-After auditing all entries, produce a summary:
+- DIRECT/STRONG + all checks pass → **KEEP**
+- MODERATE + all checks pass → **KEEP** (flag for review)
+- WEAK → **REVIEW** (likely remove)
+- TENUOUS/EXCLUDE → **REMOVE**
+- Any check fails (jurisdiction, trade framing, liberalisation) → **REMOVE**
 
-- Total entries audited
-- Entries by match strength (count per rating)
-- Entries flagged for removal (with reasons)
-- Entries flagged for review
-- Jurisdiction failures
-- Liberalisation removals
+## After Auditing
 
-## Decision Rules
+Run: `python scripts/audit_summary.py --input audit_results.json`
 
-| Match Strength | Jurisdiction OK | Trade Framing OK | Not Liberalisation | Decision |
-|---|---|---|---|---|
-| DIRECT/STRONG | Yes | Yes | Yes | **KEEP** |
-| MODERATE | Yes | Yes | Yes | **KEEP** (flag for review) |
-| WEAK | Any | Any | Any | **REVIEW** (likely remove) |
-| TENUOUS/EXCLUDE | Any | Any | Any | **REMOVE** |
-| Any | No | Any | Any | **REMOVE** |
-| Any | Any | No | Any | **REMOVE** |
-| Any | Any | Any | No | **REMOVE** (unless insufficient reform) |
+Present the summary. Ask the user to decide on REVIEW entries.
 
-Apply these rules mechanically. Do not override them with subjective judgement.
+## Troubleshooting
+
+**Too many removals (>30%):** The extraction may have been too aggressive. Check if theme domain descriptions are too broad.
+
+**Jurisdiction confusion:** In bilateral trade disputes, both sides may be described. The barrier is the foreign government's action, not the document author's response.

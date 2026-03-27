@@ -1,82 +1,54 @@
 ---
 name: dedup-entries
-description: Deduplicate extracted entries within each country-theme pair. Merges entries that describe the same underlying trade concern. Use after extract-classify (and optionally after audit-entries) to consolidate the dataset.
-user-invocable: true
+description: Deduplicate extracted entries within each country-theme pair. Merges entries describing the same underlying trade concern and recalculates state act counts. Use when user says "deduplicate", "merge duplicates", "consolidate entries", or after extract-classify and audit-entries are complete.
 ---
 
-# Deduplicate Extracted Entries
-
-You are a trade policy analyst deduplicating a catalogue of trade concerns. Multiple extraction passes or overlapping document sections may produce entries that describe the same underlying barrier. Your job is to identify and merge these.
-
-## Input
-
-Read the extraction output file (JSON). Process one country-theme pair at a time.
-
-## Merging Rules
-
-For entries within a SINGLE COUNTRY under a SINGLE THEME:
-
-| Condition | Decision |
-|-----------|----------|
-| Entries from the same document section about the same topic | **MERGE** |
-| Entries quoting consecutive sentences about the same policy | **MERGE** |
-| Different aspects of one law or regulation | **MERGE** |
-| Same policy described at different levels of detail | **MERGE** (keep the more detailed version) |
-| Genuinely different policies or sectors | **KEEP SEPARATE** |
-| Same named law under different themes | **KEEP SEPARATE** (each theme gets its own entry) |
-
-**When in doubt, merge.** It is better to consolidate than to double-count.
+# Deduplicate Entries
 
 ## Process
 
-For each country-theme pair:
+For each country-theme pair in the extraction file:
 
-1. **Read all entries** for this country-theme combination.
-2. **Identify clusters** of entries describing the same underlying concern.
-3. **For each cluster**, select a representative entry and merge information from the others:
-   - Keep the most detailed `barrier_description`
-   - Combine all unique `exact_quote` passages
-   - Union all `state_acts` (deduplicate named acts by name)
-   - Union all `intervention_types`
-   - Keep the strongest `match_strength`
-   - Keep the highest `relevance_score`
-4. **Record the merge** for transparency.
+1. Read all entries for this pair
+2. Identify clusters of entries describing the same barrier:
+   - Same document section + same topic → merge
+   - Consecutive sentences about same policy → merge
+   - Different aspects of one law → merge
+   - Different policies/sectors → keep separate
+   - **When in doubt, merge** (better to consolidate than double-count)
+3. For each cluster, keep the most detailed entry and absorb content from others:
+   - Combine unique quotes into `passages` array
+   - Union state acts (deduplicate named acts by name)
+   - Union intervention types
+   - Keep strongest match_strength and highest relevance_score
+   - Add `_merged_from` field listing absorbed entry IDs
+4. Recalculate counts:
+   - `unique_named` = count of distinct named act names in the pair
+   - `unnamed` = count of unnamed act instances
+   - `total_state_acts` = unique_named + unnamed
 
-## Output Format
+## Output
 
-For each cluster, produce:
+Write clusters as JSON, then update the extraction file:
 
 ```json
 {
   "cluster_id": 0,
-  "representative_entry_id": "the entry ID to keep",
-  "merged_entry_ids": ["entry_1", "entry_2", "entry_3"],
-  "consolidated_barrier": "brief description of the consolidated barrier",
-  "reasoning": "why these entries describe the same concern"
+  "representative_entry_id": "keep this one",
+  "merged_entry_ids": ["absorbed_1", "absorbed_2"],
+  "consolidated_barrier": "brief description",
+  "reasoning": "why these are the same concern"
 }
 ```
 
-Then update the extraction file:
-- Replace merged entries with a single consolidated entry
-- Add a `_merged_from` field listing the original entry IDs
-- Combine `exact_quote` fields from all merged entries into a `passages` array
+## After Dedup
 
-## Named Act Deduplication
+Run: `python scripts/dedup_counts.py --before extractions.json --after extractions_deduped.json`
 
-Within each country-theme pair, named state acts are deduplicated by instrument name:
-- If "Cybersecurity Law" appears in two separate entries for China under tech_discrimination, it counts once in the consolidated entry.
-- Unnamed acts are NOT deduplicated (no unique identifier exists).
+This compares before/after counts and reports which country-theme pairs changed.
 
-After dedup, recalculate:
-- `unique_named`: count of distinct named act names
-- `unnamed`: count of unnamed act instances
-- `total_state_acts`: unique_named + unnamed
+## Troubleshooting
 
-## Summary Report
+**No duplicates found:** This is normal for well-structured documents where each policy appears in only one section. The NTE report sometimes discusses the same law in multiple sub-sections, which is where dedup matters.
 
-After processing all country-theme pairs, report:
-- Total entries before dedup
-- Total entries after dedup
-- Number of merges performed
-- Country-theme pairs affected
-- Largest cluster (most entries merged)
+**Over-merging:** If distinct policies got merged, the theme domain descriptions may be too broad, causing different barriers to look similar. Split the merged entry back and tighten theme definitions.

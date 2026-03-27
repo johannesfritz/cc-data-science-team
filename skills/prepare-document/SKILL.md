@@ -1,98 +1,60 @@
 ---
 name: prepare-document
-description: Convert a PDF policy document to structured markdown for classification. Reads the PDF directly, identifies document structure (country chapters, section headers), and outputs clean markdown with proper heading hierarchy. Use before extract-classify.
-user-invocable: true
+description: Convert a PDF policy document to structured markdown for classification. Identifies country chapters, section headers, and preserves quoted text. Use when user says "prepare the document", "convert this PDF", "set up the NTE for extraction", or provides a PDF to classify. Must run before extract-classify.
 ---
 
-# Prepare Document for Classification
+# Prepare Document
 
-Convert a source PDF into structured markdown suitable for the extract-classify skill.
+Convert a source PDF into structured markdown for the extract-classify skill.
 
-## Why This Step Matters
+## Steps
 
-The extract-classify skill works section by section through a document. Clean markdown with consistent heading hierarchy makes extraction more accurate and lets the classifier identify country boundaries, section breaks, and content structure reliably.
+### 1. Read the PDF
 
-## Process
+Read in 20-page chunks using the Read tool with `pages` parameter. Start with the table of contents to understand structure.
 
-### Step 1: Read the PDF
+### 2. Identify Structure
 
-Read the source PDF file. If it is large (100+ pages), read it in page ranges (e.g., pages 1-20, then 21-40). The Read tool supports PDF files with a `pages` parameter.
+| Document Type | Heading Pattern |
+|---------------|----------------|
+| Country chapters (NTE, TPR) | `### **COUNTRY**` → `#### **Section**` |
+| Thematic sections | `### **Theme**` → `#### **Country**` |
+| Instrument catalogue | `### **Sector**` → `#### **Instrument**` |
 
-### Step 2: Identify the document structure
+### 3. Write Markdown
 
-Policy documents typically follow one of these structures:
+Output to `data/{document_name}.md` with:
+- `###` for top-level divisions (countries/themes)
+- `####` for sub-sections
+- Bold names: `### **COUNTRY NAME**`
+- Paragraph breaks between paragraphs
+- Verbatim preservation of quoted text
+- Optional page markers: `<!-- page N -->`
 
-| Structure | Example | Heading Hierarchy |
-|-----------|---------|-------------------|
-| **Country chapters** | NTE Report, WTO TPR | `### **COUNTRY**` → `#### **Section**` |
-| **Thematic sections** | EU Trade Barriers Regulation | `### **Theme**` → `#### **Country**` |
-| **Instrument catalogue** | Subsidy inventories | `### **Sector**` → `#### **Instrument**` |
-| **Mixed** | OECD reviews | Varies — identify the primary organising principle |
+### 4. Validate
 
-Determine which structure applies and note it for the user.
+Run: `python scripts/check_structure.py --input data/output.md`
 
-### Step 3: Convert to markdown
+Report to user: total lines, word count, number of top-level sections, number of sub-sections.
 
-Write the full document as a markdown file, preserving:
+### 5. Create Project Config
 
-1. **Heading hierarchy** — use `###` for top-level divisions (countries or themes), `####` for sub-sections, `#####` for sub-sub-sections. Reserve `#` and `##` for document-level titles.
+If `project-config.json` doesn't exist, create from `templates/project-config.json` with the document path pre-filled.
 
-2. **Bold country/section names** — wrap in `**` for reliable regex matching: `### **COUNTRY NAME**`
+## Example
 
-3. **Paragraph breaks** — separate paragraphs with blank lines. Do not run paragraphs together.
+User provides `NTE-Report-2025.pdf`:
 
-4. **Quoted text** — preserve any text that appears as a direct quote or citation. These are critical for the exact_quote field in extraction.
+1. Read pages 1-5 (table of contents) → identify 57 country chapters
+2. Read pages 6-25, write Algeria through Cambodia
+3. Continue in 20-page chunks until complete
+4. Validate: "22,000 lines, 380,000 words, 57 country sections, 285 sub-sections"
+5. Create `project-config.json` with `document_path: "data/nte_2025_full.md"`
 
-5. **Footnotes and references** — preserve at the end of each section or at the document end.
+## Troubleshooting
 
-6. **Tables** — convert to markdown tables where possible. If a table is too complex, describe its content in prose.
+**Headers/footers repeated in text:** Clean these during conversion — remove running headers, page numbers, and repeated document titles.
 
-7. **Page numbers** — optionally add page markers (`<!-- page N -->`) at page boundaries. These help the extract-classify skill record which page a finding came from.
+**Columns merged:** Some PDFs have two-column layout. If text from columns is interleaved, read page by page and manually reconstruct paragraph order.
 
-### Step 4: Validate the output
-
-After writing the markdown file:
-
-1. **Check heading count** — count `###` headings. For an NTE-style report with 50+ countries, you should see 50+ country headers.
-2. **Check for truncation** — verify the last country/section is complete. Large PDFs may need multiple read passes.
-3. **Spot-check a mid-document section** — read one section from the middle and compare against the PDF to verify content fidelity.
-4. **Report statistics** — tell the user: total lines, total words, number of top-level sections identified, number of sub-sections.
-
-### Step 5: Write the project configuration
-
-If a `project-config.json` does not yet exist in the project directory, create one from the template. Pre-fill:
-- `document_path`: the markdown file just created
-- `document_type`: inferred from the document structure
-
-## Output
-
-- `data/{document_name}.md` — the structured markdown
-- Optionally: `data/{document_name}_pages.json` — page-level metadata (page number → line range mapping)
-
-## Tips for Large Documents
-
-- The NTE Report is ~500 pages. Read in 20-page chunks and write incrementally.
-- If the document has a table of contents, read that first to understand the structure before processing the body.
-- Some PDFs have messy extraction (headers/footers repeated, columns merged). Clean these up during conversion — the extraction skill assumes clean text.
-
-## Example: NTE Report Structure
-
-The USTR National Trade Estimate Report organises as:
-
-```
-# National Trade Estimate Report on Foreign Trade Barriers 2025
-
-## [Preamble / Executive Summary]
-
-### **ALGERIA**
-#### **Trade Barriers**
-[content...]
-#### **Intellectual Property Protection**
-[content...]
-
-### **ARGENTINA**
-#### **Import Policies**
-[content...]
-```
-
-Each `### **COUNTRY**` header marks a country chapter boundary. The extract-classify skill uses these boundaries to process one country at a time.
+**Truncated output:** For 500+ page PDFs, write incrementally after each 20-page chunk. Verify the last section is complete.
