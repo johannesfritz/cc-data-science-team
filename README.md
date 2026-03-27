@@ -8,7 +8,7 @@ This repo works as both a **Claude Code** config (via symlinks) and a **Claude C
 
 | Directory | Count | Purpose |
 |-----------|-------|---------|
-| `skills/` | 3 | **Coworker skills:** extract-classify, audit-entries, dedup-entries |
+| `skills/` | 4 | **Coworker skills:** prepare-document, extract-classify, audit-entries, dedup-entries |
 | `agents/` | 7 | analytics-manager, data-analyst, statistical-reviewer, etc. |
 | `rules/` | 5 | r-code-standards, data-handling, chart-creation, etc. |
 | `protocols/` | 5 | applied-econometrics, causal-inference, data-visualization, etc. |
@@ -24,6 +24,7 @@ claude plugin add ./cc-data-science-team
 ```
 
 Available skills:
+- `/data-science-team:prepare-document` — Convert a PDF to structured markdown for classification
 - `/data-science-team:extract-classify` — Classify a policy document against configurable themes
 - `/data-science-team:audit-entries` — Red-team review of extracted entries
 - `/data-science-team:dedup-entries` — Deduplicate entries within country-theme pairs
@@ -45,7 +46,7 @@ The extraction skills port a proven methodology for systematically classifying p
 
 ### Quick start
 
-1. Prepare your source document (convert PDF to markdown if needed)
+1. Run `/data-science-team:prepare-document` to convert your PDF to structured markdown
 2. Copy `templates/themes-template.json` and define your themes (or use `examples/nte-2025-themes.json` as a starting point)
 3. Copy `templates/project-config.json` and set your inclusion/exclusion criteria
 4. Run `/data-science-team:extract-classify` to classify the document section by section
