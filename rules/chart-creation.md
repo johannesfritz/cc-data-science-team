@@ -25,6 +25,7 @@ Before creating ANY chart, read `.claude/protocols/data-visualization.md` for:
 | SGEPT analytical products | Python matplotlib OK | Scenario monitors, briefing charts, LinkedIn visuals |
 | Exploratory / quick look | Python matplotlib OK | Not for publication |
 | Interactive dashboards | Shiny / Plotly | Different workflow |
+| Flowcharts, decision trees, process maps | HTML/CSS + Playwright | `diagram-generator` skill |
 
 **Default to R for GTA-branded publication charts.** Python/matplotlib is acceptable for:
 - SGEPT analytical products (scenario monitors, briefing charts, LinkedIn visuals)
