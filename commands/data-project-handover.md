@@ -1,3 +1,7 @@
+---
+description: "Prepare a complete handover package so a colleague can review results and iterate on the methodology using Claude Coworker with the data-"
+---
+
 Prepare a complete handover package so a colleague can review results and iterate on the methodology using Claude Coworker with the data-science-team plugin.
 
 Usage: /data-project-handover [project-folder]
@@ -45,7 +49,7 @@ Check which `.env` files exist in the project tree and up to the workspace root 
 
 ### 1.4 Check for hardcoded paths
 
-Scan all scripts for absolute paths (e.g. `/Users/johannesfritz/...`). These must be patched in the zip so the scripts find `.env` from the project root first.
+Scan all scripts for absolute paths (e.g. `/Users/<name>/...` / `$HOME/...`). These must be patched in the zip so the scripts find `.env` from the project root first.
 
 ---
 
@@ -229,5 +233,5 @@ Gaps: {None / list of uncovered methods}
 - This command creates files outside the current project (in the plugin repo). Confirm with the user before pushing to `cc-data-science-team`.
 - The `.env` file in the zip contains real credentials. Always warn the user.
 - If the project has no scripts (pure manual analysis), skip Phases 1.2-1.4 and 3.2, and produce only the briefing + result files in the zip.
-- The plugin repo location is: `/Users/johannesfritz/Documents/GitHub/jf-private/claude-setup/cc-data-science-team/`
+- The plugin repo location is: `${CLAUDE_PLUGIN_ROOT}` (typically `~/Documents/GitHub/jf-private/claude-setup/cc-data-science-team/` on the author's machine)
 - Credential sources to check (in order): project `.env`, `jf-thought/.env`, `jf-thought/sgept-analytics/data-queries/.env`, `jf-private/.env`

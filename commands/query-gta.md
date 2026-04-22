@@ -1,3 +1,7 @@
+---
+description: "Execute SQL queries against the GTA/DPA database"
+---
+
 # /query-gta Command
 
 Execute SQL queries against the GTA/DPA database.

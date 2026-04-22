@@ -1,3 +1,7 @@
+---
+description: "Adversarial verification of analytical deliverables before publication"
+---
+
 Adversarial verification of analytical deliverables before publication.
 
 Usage: /red-team <project-folder>

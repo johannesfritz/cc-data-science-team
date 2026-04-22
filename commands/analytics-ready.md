@@ -1,3 +1,7 @@
+---
+description: "Run quality gates for analytical deliverables before delivery"
+---
+
 Run quality gates for analytical deliverables before delivery.
 
 Usage: /analytics-ready <project-folder>
