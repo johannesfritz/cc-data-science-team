@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "johannesfritz-cc-data-science-team",
+  "description": "Data science team tools for structured document classification, version comparison, external database matching, and analytical workflows.",
+  "owner": {
+    "name": "SGEPT"
+  },
+  "plugins": [
+    {
+      "name": "data-science-team",
+      "description": "Structured document classification, version comparison, external database matching, and analytical workflows. Extract and tag passages against user-defined schemas, cross-check between sources, and produce validated datasets. Use for policy reports, regulatory filings, research documents, or any structured text analysis.",
+      "category": "productivity",
+      "source": ".",
+      "homepage": "https://github.com/johannesfritz/cc-data-science-team"
+    }
+  ]
+}
