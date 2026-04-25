@@ -42,23 +42,7 @@ Phase 3: Iterate (interactive)
 
 ## GTA Visual Identity (Optional)
 
-Ask during Phase 1: "Should this use GTA branding?"
-
-When active, apply these mandatory elements:
-
-| Element | Specification |
-|---|---|
-| Background | `#E8EEF5` |
-| Primary navy | `#003366` |
-| Header | Linear gradient `#1874CD` to `#0F599D`, 5px navy top stripe |
-| Font | Roboto via Google Fonts CDN (weights 300, 400, 500, 700) |
-| Header icon | `GTA Icon Color dark.png` (ID: `header-icon-img`) |
-| Footer logo | `GTA Logo Color light.png` (ID: `footer-logo`) |
-| Footer text | `Source: Global Trade Alert \| globaltradealert.org` |
-| Logo assets | `jf-ceo/sgept-backoffice/assets/gta-logos/` |
-| Also in | `jf-thought/sgept-analytics/us-tariff-barrier-estimates/styling/` |
-
-When NOT active, ask user for colour palette and branding preferences.
+Ask during Phase 1: "Should this use GTA branding?" When active, apply the GTA mandatory elements (colours, header gradient, logos, font) — full spec in `references/gta-branding.md`. When not active, ask the user for their colour palette and branding preferences.
 
 ## Output Formats
 
@@ -106,111 +90,7 @@ python3 /path/to/cc-data-science-team/skills/diagram-generator/scripts/render_di
 
 ## CSS Design Patterns
 
-### Layout: Vertical spine with horizontal exits (decision trees)
-
-3-column CSS Grid where the decision node is centred and exits branch to one side:
-
-```css
-.row {
-  display: grid;
-  grid-template-columns: 1fr 320px 1fr;
-  align-items: center;
-}
-/* Column 1: empty | Column 2: decision node | Column 3: exit outcome */
-```
-
-### Connectors (CSS-only, no SVG)
-
-**Vertical line:**
-```css
-.v-line { width: 2.5px; height: 20px; background: #003366; border-radius: 1px; }
-```
-
-**Arrow head (down):**
-```css
-.arrow-down {
-  width: 0; height: 0;
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-top: 7px solid #003366;
-}
-```
-
-**Horizontal arm with right-pointing arrow:**
-```css
-.h-line {
-  flex: 1; height: 2.5px; position: relative;
-  background: #1E8449; min-width: 16px;
-}
-.h-line::after {
-  content: '';
-  position: absolute; right: -1px; top: 50%;
-  transform: translateY(-50%);
-  border-top: 6px solid transparent;
-  border-bottom: 6px solid transparent;
-  border-left: 8px solid #1E8449;
-}
-```
-
-**Fork/split (inverted T):**
-```css
-.split-fork { display: flex; flex-direction: column; align-items: center; }
-.v-stem { width: 2.5px; height: 14px; background: #003366; }
-.h-bar { height: 2.5px; background: #003366; align-self: stretch; margin: 0 160px; }
-```
-
-### Node styles
-
-**Decision node:** white bg, navy border, rounded, shadow
-```css
-.decision-box {
-  background: white; border: 2.5px solid #003366; border-radius: 10px;
-  padding: 12px 20px; text-align: center; font-size: 15px; font-weight: 500;
-  color: #1a1a2e; box-shadow: 0 2px 8px rgba(0,51,102,0.08);
-}
-```
-
-**Outcome node:** solid colour bg, white text
-```css
-.outcome {
-  padding: 8px 16px; border-radius: 10px; color: white; font-weight: 700;
-  font-size: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-}
-```
-
-**Badge/label:** pill shape
-```css
-.annex-badge {
-  background: #003366; color: white; padding: 5px 18px; border-radius: 20px;
-  font-size: 12px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;
-}
-```
-
-### Colour semantics for outcome nodes
-
-| Severity | Hex | Use |
-|---|---|---|
-| Extreme (e.g. +200%) | `#9B1B30` | Deep red |
-| High (e.g. +50%) | `#C0392B` | Red |
-| Medium-high (e.g. +25%) | `#D4880F` | Amber |
-| Medium (e.g. +15%) | `#B8860B` | Dark amber |
-| Standard (e.g. +10%) | `#1874CD` | GTA blue |
-| Special/complex | `#003366` | Navy |
-| Exempt/none | `#1E8449` | Dark green (WCAG-safe on white text) |
-
-Each colour variant needs matching: line colour, arrow border colour, tag text colour, and tag background (8% opacity version).
-
-### Height estimation
-
-| Element | Height (approx.) |
-|---|---|
-| Header (GTA branded) | 90-110px |
-| Decision node + vertical connector | 80-100px per step |
-| Branch section (fork + sub-tree) | 150-300px depending on depth |
-| Notes section | 40-60px |
-| Footer | 50-70px |
-
-Calculate total before setting the card height. If content exceeds the format height, either compress spacing or increase the card height (accepting a non-standard aspect ratio).
+See `references/css-patterns.md` for the catalogue: layouts (3-column decision-tree spine), connectors (vertical lines, arrow heads, horizontal arms, fork/split), node styles (decision, outcome, badge), colour semantics (severity → hex), and pre-render height estimation. Pull what fits; you don't have to use the whole catalogue.
 
 ## Quality Checklist
 
@@ -221,7 +101,7 @@ Calculate total before setting the card height. If content exceeds the format he
 - [ ] Arrow heads visible and pointing in the correct direction
 - [ ] If GTA branded: header icon, footer logo, Roboto font, #E8EEF5 bg, source caption
 - [ ] No browser default styles leaking through
-- [ ] NEVER use Read tool on output PNG files — use `file` and `ls -la` via Bash
+- [ ] Inspect output PNG files via `file` or `ls -la` (Bash) rather than the Read tool — Read processes PNGs as multimodal images, and corrupt/invalid PNGs trigger an API error that crashes the session
 
 ## Reference Implementation
 

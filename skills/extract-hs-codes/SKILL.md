@@ -5,13 +5,7 @@ description: Extract HS/HTSUS product code tables from PDF documents into CSVs u
 
 # Extract HS Codes from PDF
 
-Extract product classification code tables (HS, HTSUS, HTS) from PDF documents into structured CSVs with dual-method cross-validation.
-
-## When to Use
-
-- User provides a PDF with HS/HTSUS code tables (tariff proclamations, annex lists, product scope documents)
-- Tables have a code column (4 to 10+ digits) and a description column
-- May be a single table, or multiple tables within one document
+Extract product classification code tables (HS, HTSUS, HTS) from PDF documents into structured CSVs with dual-method cross-validation. The "when to use" guidance lives in the frontmatter description.
 
 ## Core Principles
 
@@ -25,18 +19,18 @@ Every PDF is different. Before writing extraction code, read the entire document
 - What the first and last code per table are (anchor codes for verification)
 - Any structural quirks (note text before tables, multi-line descriptions, out-of-order entries)
 
-This mapping is the spec for the extraction script. Do not skip it.
+This mapping is the spec for the extraction script. Skipping it tends to produce parsers that fit the *imagined* document rather than the real one.
 
-### 2. Always use two independent extraction methods
+### 2. Use two independent extraction methods because agreement is the confidence signal
 
-Confidence comes from agreement between methods that share no code path:
+Single-method extraction has no internal check — you only catch errors when downstream consumers complain. Two independent code paths producing the same output is a strong signal the extraction is correct:
 
 - **Method A — pdfplumber table extraction:** `page.extract_tables()` returns structured rows. Good at preserving column separation but can merge cells or miss rows.
-- **Method B — independent verification:** Choose the best alternative based on the document's structure (see Method B selection below). The point is independence — if both methods produce the same codes, the extraction is correct.
+- **Method B — independent verification:** Choose based on the document's structure (see Method B selection below). The point is independence — if both methods produce the same codes, you have evidence; if not, you have a specific page to debug.
 
-### 3. Always normalise to 8-digit HS codes
+### 3. Normalise to 8-digit HS codes for downstream joins
 
-Official documents mix code lengths freely. Always produce an `hs_8digit` column:
+Official documents mix code lengths freely (4-digit chapters, 8-digit, 10-digit subheadings). Downstream analytics typically join on 8-digit, so produce an `hs_8digit` column even when the source uses other lengths:
 
 ```python
 HTSUS_PATTERN = re.compile(r"^\d{4}(\.\d{2}(\.\d{2,4}(\.\d{2,4})?)?)?$")
@@ -53,9 +47,9 @@ def htsus_to_hs8(code: str) -> str:
 | `7216.10.00` | `72161000` |
 | `7216.91.00.10` | `72169100` |
 
-### 4. Descriptions embed HS codes — never extract from raw text alone
+### 4. Descriptions often embed HS codes — isolate the first column before matching
 
-Descriptions frequently reference other codes: "of heading 8471", "of subheading 9014.80.50". Method A handles this naturally (column separation). Method B must also isolate first-column content — see below.
+Descriptions frequently reference other codes ("of heading 8471", "of subheading 9014.80.50"). A naive regex on raw extracted text picks up these inline mentions and inflates the row count. Method A handles this naturally (column separation). Method B must also isolate first-column content — see below.
 
 ### 5. Continuation rows need merging
 
@@ -189,36 +183,9 @@ Some tables have 3+ columns (code, description, scope). Method A captures all co
 
 Proclamations often have legal note paragraphs before the table starts. These contain words that look like codes but are not data. Method A naturally skips these (they are not in table elements). For Method B, use page ranges or y-coordinate filtering to skip pre-table text.
 
-## Debugging Toolkit
+## Debugging
 
-**Inspect word positions on a page:**
-```python
-uv run --with pdfplumber python3 -c "
-import pdfplumber
-pdf = pdfplumber.open('path/to/file.pdf')
-page = pdf.pages[PAGE_IDX]
-for w in page.extract_words()[:30]:
-    print(f'x={w[\"x0\"]:6.1f} top={w[\"top\"]:6.1f} text={w[\"text\"]}')
-pdf.close()
-"
-```
-
-**Find all code-like words in first column:**
-```python
-import re
-HTSUS = re.compile(r'^\d{4}(\.\d{2}(\.\d{2,4}(\.\d{2,4})?)?)?$')
-for w in page.extract_words():
-    if w['x0'] < FIRST_COL_MAX and HTSUS.match(w['text']):
-        print(f'x={w["x0"]:6.1f} top={w["top"]:6.1f} text={w["text"]}')
-```
-
-**Check how a table header renders:**
-```python
-# Find words in the header area (adjust y-range to area between note text and first code)
-for w in page.extract_words():
-    if START_Y < w['top'] < END_Y:
-        print(f'x={w["x0"]:6.1f} top={w["top"]:6.1f} text={w["text"]}')
-```
+When verification fails or the parser misbehaves, see `references/extraction-debugging.md` for the toolkit (word-position inspection, code-finding snippets, common failure modes) and the anti-patterns observed in past runs.
 
 ## Reference Implementations
 
@@ -227,15 +194,4 @@ for w in page.extract_words():
 | S122 Annex II | `parse_s122_annex2.py` | Medium (single table, 3 columns) | 1 | ~700 |
 | S232 Metals Annexes | `parse_s232_metals.py` | Complex (12 tables, multi-row headers, variable column positions) | 12 | 985 |
 
-Both are in `us-tariff-barrier-estimates/code/`. Study the one closest to your document's complexity before writing a new parser.
-
-## Anti-Patterns
-
-| Anti-Pattern | Why It Fails | Correct Approach |
-|--------------|-------------|------------------|
-| Writing code before reading the PDF | Assumptions about structure are wrong | Always map tables, columns, code formats first |
-| Trusting Method A alone without verification | Table extraction can miss rows or merge cells | Cross-validate with an independent Method B |
-| Using word-level bbox when simple regex works | Over-engineering adds complexity and fragility | Match method complexity to document complexity |
-| Hardcoding row counts for verification | Counts change between document versions | Use anchor codes (first/last) instead |
-| Rejecting out-of-order entries as errors | Official documents have legitimate ordering quirks | Treat monotonicity as WARNING after checking PDF |
-| Copy-pasting S232 parser's header state machine | Most documents have simpler or different table structure | Adapt the architecture to what the PDF actually contains |
+Both are in `us-tariff-barrier-estimates/code/`. Study the one closest to your document's complexity before writing a new parser. Anti-patterns observed in past runs are listed in `references/extraction-debugging.md`.
