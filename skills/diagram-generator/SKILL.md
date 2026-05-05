@@ -1,6 +1,6 @@
 ---
 name: diagram-generator
-description: "Generate structured diagrams (flowcharts, decision trees, process maps) as high-DPI PNG images using HTML/CSS + Playwright. Use when user needs a visual diagram with nodes, connectors, or structured layout. NOT for data charts (use R+cowplot via chart-creation rules) or AI-generated images (use header-image-generator)."
+description: "Generate structured diagrams (flowcharts, decision trees, process maps) as high-DPI PNG images using HTML/CSS + Playwright. Use when user needs a visual diagram with nodes, connectors, or structured layout. NOT for data charts (use R+cowplot via chart-creation rules) or AI-generated images (use image-generator)."
 allowed-tools: Read, Bash, Write, AskUserQuestion
 ---
 
@@ -17,7 +17,7 @@ Generate publication-quality structured diagrams using HTML/CSS templates render
 | Scorecards, comparison cards | |
 | Structured infographics with nodes/connectors | |
 | | Data charts with axes/series: `chart-creation.md` + R+cowplot |
-| | AI-generated header art: `header-image-generator` skill |
+| | AI-generated header art: `image-generator` skill |
 | | Interactive dashboards: Shiny / Plotly |
 
 ## Workflow
