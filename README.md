@@ -15,14 +15,36 @@ Structured document classification, version comparison, external database matchi
 | `templates/` | 3 | Configurable project templates (themes, config, output schema) |
 | `examples/` | 4 | NTE themes, NTE project config, MAST taxonomy, counting rules |
 
-## Installation — Claude Coworker (Plugin)
+## How this stacks
+
+This repo is the **data-science protocol library** for analytical projects in the SGEPT/GTA stack. Dependencies:
+
+- **(required companion)** cc-os — the `web-extract` skill (when built) wraps cc-os/scripts/fetch-source.py; `cc-os/rules/environment-and-models.md` documents the canonical Gemini model used by the extraction pipeline
+- **(optional companion)** cc-writing-team — `web-research` skill is the writing-side mirror of this repo's `web-extract`
+- **(optional companion)** cc-sgept-graphic-design-team — chart-identity content is the brand-layer atop this repo's Knaflic methodology
+
+**Consumed by (one-way coupling):**
+- **cc-{gta,dpa}-policy-analysis-team** route `/gta-charts` and `/dpa-charts` to this repo's chart-handoff protocol when present
+- **cc-podcast-team** ingests analytical artifacts from canonical jf-private layout `data-queries/` projects this team produces
+
+External deps when running analytics: `jf-thought/.env` for GTA database + AWS S3 credentials (canonical jf-private layout); R + Python toolchain.
+
+## Installation
+
+### Standalone
+
+```bash
+bash /path/to/cc-data-science-team/install.sh
+```
+
+### Claude Coworker
 
 ```bash
 git clone git@github.com:global-trade-alert/cc-data-science-team.git
 claude plugin add ./cc-data-science-team
 ```
 
-## Installation — Claude Code (Symlinks)
+### Manual symlink (canonical jf-private layout)
 
 ```bash
 git clone git@github.com:global-trade-alert/cc-data-science-team.git .claude-ds

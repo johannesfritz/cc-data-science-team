@@ -1,0 +1,22 @@
+# cc-data-science-team's analytics primitives are inherently coupled to the
+# canonical jf-private layout: analyst-orchestrator, analytics-manager, and
+# data-analyst agents target jf-thought/sgept-analytics/data-queries/ as the
+# project root convention; new projects follow the YYMMDD-project-title naming
+# inside that tree; .env credentials are loaded from jf-thought/.env. Standalone
+# consumers reuse the protocols + style + statistical sanity checks but their
+# own data-queries/ root substitutes for the canonical path.
+
+agents/analyst-orchestrator.md
+agents/analytics-manager.md
+agents/data-analyst.md
+commands/data-project-handover.md
+commands/query-gta.md
+protocols/statistical-sanity.md
+protocols/data-visualization.md
+rules/data-handling.md
+rules/r-code-standards.md
+skills/analytics/SKILL.md
+skills/diagram-generator/SKILL.md
+skills/diagram-generator/references/gta-branding.md
+skills/new-analysis/SKILL.md
+skills/s3-upload/SKILL.md
