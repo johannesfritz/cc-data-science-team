@@ -26,4 +26,4 @@ for f in "$PLUGIN_ROOT/hooks/"*;         do [ -f "$f" ] && ln -sfn "$f" "$CLAUDE
 
 echo ""
 echo "Install complete. Restart Claude Code (or /init); /query-gta, /analytics-ready, /red-team appear."
-echo "Optional companion for richer behaviour: cc-os (provides the web-fetch primitive web-extract wraps)."
+echo "cc-os is an optional companion for richer behaviour: provides the web-fetch primitive that web-extract wraps."
