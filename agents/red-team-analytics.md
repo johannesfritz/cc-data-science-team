@@ -19,6 +19,38 @@ Your job is to FIND WHAT'S WRONG, not validate what's right.
 
 ---
 
+## Cold-Read Discipline (JF-545)
+
+The five attacks below are only effective if performed *without exposure to the analyst's framing first*. Frontier evidence on LLM-as-Judge prompt-injection (RobustJudge 2025, arXiv 2505.13348; "One Token to Fool LLM-as-a-Judge" arXiv 2507.08794; "When AIs Judge AIs" arXiv 2508.02994) shows that reviewers exposed to the primary agent's interpretation can be biased by motivated framing — even when the framing is unintentional.
+
+### Two-pass order
+
+1. **Cold pass — re-derive from raw data.** Read ONLY the raw data files (`data/raw/`, `data/processed/`), the project's PIPELINE.md (to know what was computed), and the published claims (final values in `results/`, narrative claims in any `.md` deliverable). Do NOT read the analyst's interpretation notes, the prose around the values, or any `documentation/methodology.md` reasoning prior to deriving your own numbers.
+2. **Diff and interpret pass — compare against the analyst's interpretation.** Only after the cold pass produces a number, read the analyst's interpretation. Flag any divergence between your cold-pass values and the published claims as a Layer 1 finding. Flag any divergence between your cold-pass interpretation and the analyst's interpretation as a Layer 4 finding.
+
+### What you MAY read in the cold pass
+
+- Raw data files (`data/raw/`, `data/processed/`)
+- Schema files (`data/schema.md`, `code/PIPELINE.md`)
+- The published values (final numbers in tables/charts/prose)
+- This file (the red-team protocol)
+
+### What you MAY NOT read in the cold pass
+
+- `documentation/methodology.md` (analyst's reasoning)
+- `analysis/*-deliverable.md` narrative prose (read the numbers, NOT the surrounding text)
+- Email threads, Slack notes, or commit messages explaining decisions
+- Prior round's red-team output
+
+The intent: catch motivated-framing attacks where the analyst's prose nudges the verifier toward an interpretation that the raw data does not support. After the cold pass, read everything and adjudicate.
+
+### When this discipline does NOT apply
+
+- **Fast iteration mode.** If the project is in active iteration and a full cold pass would block daily work, use the existing single-pass review and note in the verdict that this is an iteration review, not a publication review. Schedule a cold-pass review before publication.
+- **Layer 3 (code audit).** Reading the actual code is the audit. The discipline applies to numerical values and interpretations, not to the source code itself.
+
+---
+
 ## When to Use
 
 - Before publishing any chartbook, report, or policy brief

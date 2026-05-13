@@ -13,6 +13,41 @@ echo "  plugin root:  $PLUGIN_ROOT"
 echo "  target:       $CLAUDE_DIR"
 [ -d "$WORKSPACE_DIR" ] || { echo "ERROR: workspace not found" >&2; exit 1; }
 
+# JF-543 guard: refuse to run when any .claude/<bucket> is itself a symlink.
+# The workspace's bucket directories may have been linked en bloc to the canonical
+# plugin source. If we then ln -sfn $canonical $workspace_bucket/<file>, the path
+# resolves through the bucket symlink to $canonical/<file>, and ln creates a
+# self-referential symlink on the canonical — destroying the source file. See
+# the JCC-966 incident report for the full diagnosis.
+# Note: this plugin links rules/ as a whole subdirectory (data-science) — that's
+# the intended pattern. The guard targets buckets where per-file linking would
+# be unsafe.
+for bucket in agents protocols commands skills hooks; do
+  target="$CLAUDE_DIR/$bucket"
+  if [ -L "$target" ]; then
+    real=$(readlink -f "$target" 2>/dev/null || echo "")
+    canon=$(readlink -f "$PLUGIN_ROOT/$bucket" 2>/dev/null || echo "")
+    cat >&2 <<EOF
+ERROR: refusing to install — $target is already a symbolic link.
+
+  $target
+    -> $real
+
+If this resolves to the canonical plugin directory ($canon),
+running per-file 'ln -sfn' would resolve through this symlink and overwrite the
+canonical files with self-references, destroying the source. This is the
+JF-543 corruption pattern.
+
+If you actually want per-file symlinks, first remove the bucket symlink:
+  rm "$target"
+and rerun the installer. Otherwise leave the bucket symlink as the install
+mechanism (it already gives the workspace read access to the canonical files)
+and do not re-run this script.
+EOF
+    exit 2
+  fi
+done
+
 mkdir -p "$CLAUDE_DIR"/{agents,rules,protocols,commands,skills,hooks}
 shopt -s nullglob
 
