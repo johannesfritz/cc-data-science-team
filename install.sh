@@ -4,6 +4,18 @@
 
 set -euo pipefail
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Create REPO-RELATIVE symlinks so they resolve on any host, not just the one that
+# ran the installer. Storing the absolute $PLUGIN_ROOT/$SCRIPT_DIR path baked in
+# /home/deploy/... and broke every other checkout (JCC-1293).
+link_rel() {  # link_rel <source> <link-path>
+  local src link rel
+  src="$( cd "$( dirname "$1" )" && pwd )/$( basename "$1" )"
+  link="$2"
+  mkdir -p "$( dirname "$link" )"
+  rel="$( python3 -c 'import os,sys; print(os.path.relpath(sys.argv[1], os.path.dirname(sys.argv[2])))' "$src" "$link" )"
+  ln -sfn "$rel" "$link"
+}
 PLUGIN_ROOT="$SCRIPT_DIR"
 WORKSPACE_DIR="${CLAUDE_WORKSPACE_DIR:-$PWD}"
 CLAUDE_DIR="$WORKSPACE_DIR/.claude"
@@ -51,13 +63,13 @@ done
 mkdir -p "$CLAUDE_DIR"/{agents,rules,protocols,commands,skills,hooks}
 shopt -s nullglob
 
-for f in "$PLUGIN_ROOT/agents/"*.md;     do ln -sfn "$f" "$CLAUDE_DIR/agents/$(basename "$f")";    echo "  agent:    $(basename "$f")"; done
+for f in "$PLUGIN_ROOT/agents/"*.md;     do link_rel "$f" "$CLAUDE_DIR/agents/$(basename "$f")";    echo "  agent:    $(basename "$f")"; done
 # rules/ as a directory link (matches the canonical jf-private sync convention)
-[ -d "$PLUGIN_ROOT/rules" ] && ln -sfn "$PLUGIN_ROOT/rules" "$CLAUDE_DIR/rules/data-science" && echo "  rule-dir: data-science"
-for f in "$PLUGIN_ROOT/protocols/"*.md;  do ln -sfn "$f" "$CLAUDE_DIR/protocols/$(basename "$f")"; echo "  protocol: $(basename "$f")"; done
-for f in "$PLUGIN_ROOT/commands/"*.md;   do ln -sfn "$f" "$CLAUDE_DIR/commands/$(basename "$f")";  echo "  command:  $(basename "$f")"; done
-for d in "$PLUGIN_ROOT/skills/"*/;       do ln -sfn "$d" "$CLAUDE_DIR/skills/$(basename "$d")"  && echo "  skill:    $(basename "$d")"; done
-for f in "$PLUGIN_ROOT/hooks/"*;         do [ -f "$f" ] && ln -sfn "$f" "$CLAUDE_DIR/hooks/$(basename "$f")" && echo "  hook:     $(basename "$f")"; done
+[ -d "$PLUGIN_ROOT/rules" ] && link_rel "$PLUGIN_ROOT/rules" "$CLAUDE_DIR/rules/data-science" && echo "  rule-dir: data-science"
+for f in "$PLUGIN_ROOT/protocols/"*.md;  do link_rel "$f" "$CLAUDE_DIR/protocols/$(basename "$f")"; echo "  protocol: $(basename "$f")"; done
+for f in "$PLUGIN_ROOT/commands/"*.md;   do link_rel "$f" "$CLAUDE_DIR/commands/$(basename "$f")";  echo "  command:  $(basename "$f")"; done
+for d in "$PLUGIN_ROOT/skills/"*/;       do link_rel "$d" "$CLAUDE_DIR/skills/$(basename "$d")"  && echo "  skill:    $(basename "$d")"; done
+for f in "$PLUGIN_ROOT/hooks/"*;         do [ -f "$f" ] && link_rel "$f" "$CLAUDE_DIR/hooks/$(basename "$f")" && echo "  hook:     $(basename "$f")"; done
 
 echo ""
 echo "Install complete. Restart Claude Code (or /init); /query-gta, /analytics-ready, /red-team appear."
