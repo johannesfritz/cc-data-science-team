@@ -100,6 +100,17 @@ for f in .claude-ds/commands/*.md; do ln -s "../../$f" .claude/commands/; done
 
 These show how to fill in the generic templates for a specific domain.
 
+## Document Skills — Licence Note
+
+The `xlsx`, `pdf`, `docx`, and `pptx` skills in the `anthropics/skills` marketplace
+(`document-skills@anthropic-agent-skills`) are **source-available, not open source**.
+Anthropic publishes them for reference and developer inspection; they may not be
+redistributed or incorporated into other products. See
+[THIRD_PARTY_NOTICES.md](https://github.com/anthropics/skills/blob/main/THIRD_PARTY_NOTICES.md)
+and the `LICENSE.txt` inside each skill folder for the complete terms.
+
+All other skills in this repository remain **private — shared within team only**.
+
 ## License
 
 Private — shared within team only.
